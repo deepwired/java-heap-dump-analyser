@@ -1,0 +1,100 @@
+.file-upload {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+
+.error-banner {
+  padding: 16px 20px;
+  background: #ffebee;
+  border: 1px solid #ef5350;
+  border-radius: 8px;
+  color: #c62828;
+  font-size: 16px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.upload-area {
+  border: 3px dashed #ccc;
+  border-radius: 12px;
+  padding: 60px 40px;
+  text-align: center;
+  background: #f9f9f9;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.upload-area:hover {
+  border-color: #646cff;
+  background: #f0f0ff;
+}
+
+.upload-area.dragging {
+  border-color: #646cff;
+  background: #e8eaff;
+  transform: scale(1.02);
+}
+
+.upload-icon {
+  font-size: 64px;
+  margin-bottom: 20px;
+}
+
+.upload-area h2 {
+  margin: 0 0 10px 0;
+  font-size: 28px;
+  color: #333;
+}
+
+.upload-area p {
+  margin: 0 0 30px 0;
+  color: #666;
+  font-size: 16px;
+}
+
+.upload-button {
+  display: inline-block;
+  padding: 14px 32px;
+  background: #646cff;
+  color: white;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  border: none;
+}
+
+.upload-button:hover {
+  background: #535bf2;
+}
+
+.privacy-notice {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 30px;
+  padding: 20px;
+  background: #fff3cd;
+  border: 1px solid #ffc107;
+  border-radius: 8px;
+}
+
+.privacy-icon {
+  font-size: 32px;
+  flex-shrink: 0;
+}
+
+.privacy-text {
+  text-align: left;
+  font-size: 14px;
+  color: #856404;
+  line-height: 1.6;
+}
+
+.privacy-text strong {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 16px;
+}
