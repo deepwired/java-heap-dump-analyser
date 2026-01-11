@@ -15,16 +15,31 @@ A privacy-focused, client-side web application for analyzing Java heap dumps (.h
 ## Features
 
 - **📊 Object Histogram**: View class names, instance counts, and total memory usage
+  - **🆕 Click any class row** for detailed insights and resolution guidance
 - **🌳 Dominator Tree**: Analyze retained heap size by class
+  - **🆕 Click any class row** for detailed insights and resolution guidance
 - **🔗 Reference Chains**: Trace who holds references to large objects
 - **🔍 Leak Suspects**: Automatic detection of classes with unusually high retained size or instance count
+  - **🆕 Click class names** for detailed insights
+  - **🆕 Direct links** to troubleshooting resources and professional tools
 - **💡 Insights**: Identify common leak patterns:
   - Retained batch strings
   - Uncollected collections
   - Classloader leaks
   - Event listener accumulation
+  - ThreadLocal leaks
+  - Database resource leaks
+  - **🆕 15+ recognized Java classes** with specific guidance
+  - **🆕 Pattern-based detection** for custom classes
+- **📚 Built-in Knowledge Base**:
+  - **🆕 Detailed information** for common Java classes
+  - **🆕 Common memory issues** and why they occur
+  - **🆕 Recommended actions** with step-by-step guidance
+  - **🆕 Direct links** to official documentation (Java, Baeldung, Oracle)
+  - **🆕 Links to professional tools** (Eclipse MAT, VisualVM)
 - **🔎 Search & Filter**: Sort and search through objects efficiently
 - **📱 Responsive Design**: Works on desktop and mobile browsers
+- **🎯 Actionable Guidance**: Know exactly what to fix and in what priority
 
 ## Quick Start
 
