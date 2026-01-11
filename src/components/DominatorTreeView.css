@@ -65,8 +65,16 @@
   transition: background 0.15s;
 }
 
+.dominator-table tbody tr.clickable-row {
+  cursor: pointer;
+}
+
 .dominator-table tbody tr:hover {
   background: #f9f9f9;
+}
+
+.dominator-table tbody tr.clickable-row:hover {
+  background: #e3f2fd;
 }
 
 .dominator-table td {

@@ -6,6 +6,7 @@
 
 import { useState, useMemo } from 'react';
 import { formatSize, formatNumber } from '../services/analyzers/histogramAnalyzer.js';
+import ClassDetailsModal from './ClassDetailsModal.jsx';
 import './HistogramView.css';
 
 function HistogramView({ histogram }) {
@@ -13,6 +14,7 @@ function HistogramView({ histogram }) {
   const [sortOrder, setSortOrder] = useState('desc');
   const [searchTerm, setSearchTerm] = useState('');
   const [limit, setLimit] = useState(100);
+  const [selectedClass, setSelectedClass] = useState(null);
 
   const sortedAndFiltered = useMemo(() => {
     let result = [...histogram];
@@ -51,8 +53,22 @@ function HistogramView({ histogram }) {
   const totalSize = histogram.reduce((sum, entry) => sum + entry.totalSize, 0);
   const totalInstances = histogram.reduce((sum, entry) => sum + entry.instanceCount, 0);
 
+  const handleRowClick = (entry) => {
+    setSelectedClass(entry);
+  };
+
+  const handleCloseModal = () => {
+    setSelectedClass(null);
+  };
+
   return (
     <div className="histogram-view">
+      {selectedClass && (
+        <ClassDetailsModal 
+          classData={selectedClass}
+          onClose={handleCloseModal}
+        />
+      )}
       <div className="histogram-header">
         <h2>Object Histogram</h2>
         <div className="histogram-summary">
@@ -110,7 +126,12 @@ function HistogramView({ histogram }) {
           </thead>
           <tbody>
             {sortedAndFiltered.map((entry, index) => (
-              <tr key={index}>
+              <tr 
+                key={index} 
+                onClick={() => handleRowClick(entry)}
+                className="clickable-row"
+                title="Click for detailed insights"
+              >
                 <td className="class-name" title={entry.className}>
                   {entry.className}
                 </td>

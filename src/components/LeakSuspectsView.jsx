@@ -4,10 +4,14 @@
  * Displays detected memory leak suspects with severity levels and patterns.
  */
 
+import { useState } from 'react';
 import { formatSize, formatNumber } from '../services/analyzers/histogramAnalyzer.js';
+import ClassDetailsModal from './ClassDetailsModal.jsx';
 import './LeakSuspectsView.css';
 
 function LeakSuspectsView({ suspects, insights }) {
+  const [selectedClass, setSelectedClass] = useState(null);
+
   const getSeverityColor = (severity) => {
     switch (severity) {
       case 'critical': return '#d32f2f';
@@ -28,8 +32,22 @@ function LeakSuspectsView({ suspects, insights }) {
     }
   };
 
+  const handleClassClick = (suspect) => {
+    setSelectedClass(suspect);
+  };
+
+  const handleCloseModal = () => {
+    setSelectedClass(null);
+  };
+
   return (
     <div className="leak-suspects-view">
+      {selectedClass && (
+        <ClassDetailsModal 
+          classData={selectedClass}
+          onClose={handleCloseModal}
+        />
+      )}
       <div className="leak-suspects-header">
         <h2>Memory Leak Suspects</h2>
         <p className="description">
@@ -86,6 +104,33 @@ function LeakSuspectsView({ suspects, insights }) {
         </div>
       )}
 
+      <div className="general-resources">
+        <h3>📖 Memory Leak Resources</h3>
+        <p>For more in-depth analysis and troubleshooting, refer to these resources:</p>
+        <div className="resource-links">
+          <a href="https://www.eclipse.org/mat/" target="_blank" rel="noopener noreferrer" className="resource-link">
+            <div className="resource-title">Eclipse Memory Analyzer (MAT)</div>
+            <div className="resource-description">Industry-standard heap dump analyzer with advanced features</div>
+          </a>
+          <a href="https://visualvm.github.io/" target="_blank" rel="noopener noreferrer" className="resource-link">
+            <div className="resource-title">VisualVM</div>
+            <div className="resource-description">Visual tool for monitoring and troubleshooting Java applications</div>
+          </a>
+          <a href="https://www.baeldung.com/java-memory-leaks" target="_blank" rel="noopener noreferrer" className="resource-link">
+            <div className="resource-title">Java Memory Leaks Guide (Baeldung)</div>
+            <div className="resource-description">Comprehensive guide to understanding and fixing memory leaks</div>
+          </a>
+          <a href="https://docs.oracle.com/javase/8/docs/technotes/guides/troubleshoot/memleaks.html" target="_blank" rel="noopener noreferrer" className="resource-link">
+            <div className="resource-title">Oracle Memory Leak Troubleshooting</div>
+            <div className="resource-description">Official Oracle documentation on memory leak diagnosis</div>
+          </a>
+          <a href="https://dzone.com/articles/how-to-find-and-fix-memory-leaks-in-your-java-app" target="_blank" rel="noopener noreferrer" className="resource-link">
+            <div className="resource-title">DZone Memory Leak Tutorial</div>
+            <div className="resource-description">Practical guide to finding and fixing memory leaks</div>
+          </a>
+        </div>
+      </div>
+
       <div className="suspects-list">
         {suspects.length === 0 ? (
           <div className="no-suspects">
@@ -104,7 +149,13 @@ function LeakSuspectsView({ suspects, insights }) {
                   <span className="severity-icon">{getSeverityIcon(suspect.severity)}</span>
                   <span className="severity-text">{suspect.severity.toUpperCase()}</span>
                 </div>
-                <div className="suspect-class">{suspect.className}</div>
+                <div 
+                  className="suspect-class clickable-suspect-class"
+                  onClick={() => handleClassClick(suspect)}
+                  title="Click for detailed insights"
+                >
+                  {suspect.className}
+                </div>
               </div>
 
               <div className="suspect-stats">

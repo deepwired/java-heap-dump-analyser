@@ -1,0 +1,292 @@
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 12px;
+  max-width: 800px;
+  width: 100%;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px 24px 16px;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.modal-header h2 {
+  margin: 0;
+  font-size: 24px;
+  color: #333;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 28px;
+  color: #999;
+  cursor: pointer;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.modal-close:hover {
+  background: #f5f5f5;
+  color: #333;
+}
+
+.modal-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px;
+}
+
+.modal-footer {
+  padding: 16px 24px;
+  border-top: 1px solid #e0e0e0;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.detail-section {
+  margin-bottom: 28px;
+}
+
+.detail-section:last-child {
+  margin-bottom: 0;
+}
+
+.detail-section h3 {
+  margin: 0 0 12px 0;
+  font-size: 18px;
+  color: #333;
+  font-weight: 600;
+}
+
+.class-name-display {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.class-icon {
+  font-size: 24px;
+}
+
+.class-name {
+  font-family: 'Courier New', monospace;
+  font-size: 16px;
+  color: #d32f2f;
+  background: #f5f5f5;
+  padding: 8px 12px;
+  border-radius: 4px;
+  word-break: break-all;
+  flex: 1;
+}
+
+.well-known-badge {
+  display: inline-block;
+  background: #4caf50;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+}
+
+.stat-item {
+  background: #f9f9f9;
+  padding: 16px;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+}
+
+.stat-label {
+  display: block;
+  font-size: 13px;
+  color: #666;
+  margin-bottom: 6px;
+  font-weight: 500;
+}
+
+.stat-value {
+  display: block;
+  font-size: 20px;
+  color: #333;
+  font-weight: 700;
+}
+
+.description-text {
+  margin: 0;
+  line-height: 1.6;
+  color: #555;
+  font-size: 15px;
+}
+
+.issue-list,
+.resolution-list {
+  margin: 0;
+  padding-left: 24px;
+  line-height: 1.8;
+  color: #555;
+}
+
+.issue-list li {
+  margin-bottom: 8px;
+  color: #d84315;
+}
+
+.resolution-list li {
+  margin-bottom: 8px;
+  color: #2e7d32;
+}
+
+.links-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.doc-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  background: #f5f5f5;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  text-decoration: none;
+  color: #1976d2;
+  transition: all 0.2s;
+}
+
+.doc-link:hover {
+  background: #e3f2fd;
+  border-color: #1976d2;
+  transform: translateX(4px);
+}
+
+.link-icon {
+  font-size: 18px;
+}
+
+.link-title {
+  flex: 1;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.external-icon {
+  font-size: 16px;
+  color: #999;
+}
+
+.tips-section {
+  background: #fff8e1;
+  padding: 20px;
+  border-radius: 8px;
+  border: 1px solid #ffd54f;
+}
+
+.tips-section h3 {
+  margin-top: 0;
+}
+
+.tips-content p {
+  margin: 0 0 12px 0;
+  line-height: 1.6;
+  color: #555;
+}
+
+.tips-content p:last-child {
+  margin-bottom: 0;
+}
+
+.tips-content strong {
+  color: #333;
+  font-weight: 600;
+}
+
+.close-button {
+  background: #646cff;
+  color: white;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 6px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.close-button:hover {
+  background: #535bf2;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .modal-backdrop {
+    padding: 0;
+  }
+
+  .modal-content {
+    max-height: 100vh;
+    height: 100vh;
+    border-radius: 0;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .modal-body {
+    padding: 16px;
+  }
+
+  .modal-header {
+    padding: 16px;
+  }
+}
