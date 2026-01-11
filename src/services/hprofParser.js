@@ -147,7 +147,6 @@ export class HprofParser {
     const tag = this.data.getUint8(this.position++);
     
     // Read timestamp (4 bytes, microseconds)
-    const timestamp = this.data.getUint32(this.position);
     this.position += 4;
 
     // Read record length (4 bytes)
@@ -197,7 +196,7 @@ export class HprofParser {
   /**
    * Parse LOAD_CLASS record
    */
-  parseLoadClass(endPosition) {
+  parseLoadClass() {
     const serialNum = this.data.getUint32(this.position);
     this.position += 4;
     const classObjectId = this.readId();
@@ -220,8 +219,10 @@ export class HprofParser {
   /**
    * Parse HEAP_DUMP or HEAP_DUMP_SEGMENT record
    */
-  parseHeapDump(endPosition) {
-    while (this.position < endPosition) {
+  parseHeapDump() {
+    // Parse until we reach the end of current record data
+    // The position tracking is handled by the caller (parseRecord)
+    while (this.position < this.data.byteLength) {
       const subTag = this.data.getUint8(this.position++);
       
       try {
@@ -302,8 +303,8 @@ export class HprofParser {
     this.position += 4;
     const superClassObjectId = this.readId();
     const classLoaderObjectId = this.readId();
-    const signersObjectId = this.readId();
-    const protectionDomainObjectId = this.readId();
+    this.readId(); // signersObjectId
+    this.readId(); // protectionDomainObjectId
     this.readId(); // reserved
     this.readId(); // reserved
     const instanceSize = this.data.getUint32(this.position);
@@ -473,37 +474,46 @@ export class HprofParser {
    */
   readValue(type) {
     switch (type) {
-      case 2: // object
+      case 2: { // object
         return this.readId();
-      case 4: // boolean
+      }
+      case 4: { // boolean
         return this.data.getUint8(this.position++) !== 0;
-      case 5: // char
+      }
+      case 5: { // char
         const charVal = this.data.getUint16(this.position);
         this.position += 2;
         return charVal;
-      case 6: // float
+      }
+      case 6: { // float
         const floatVal = this.data.getFloat32(this.position);
         this.position += 4;
         return floatVal;
-      case 7: // double
+      }
+      case 7: { // double
         const doubleVal = this.data.getFloat64(this.position);
         this.position += 8;
         return doubleVal;
-      case 8: // byte
+      }
+      case 8: { // byte
         return this.data.getInt8(this.position++);
-      case 9: // short
+      }
+      case 9: { // short
         const shortVal = this.data.getInt16(this.position);
         this.position += 2;
         return shortVal;
-      case 10: // int
+      }
+      case 10: { // int
         const intVal = this.data.getInt32(this.position);
         this.position += 4;
         return intVal;
-      case 11: // long
+      }
+      case 11: { // long
         const highWord = this.data.getInt32(this.position);
         const lowWord = this.data.getUint32(this.position + 4);
         this.position += 8;
         return highWord * 0x100000000 + lowWord;
+      }
       default:
         throw new Error(`Unknown type: ${type}`);
     }

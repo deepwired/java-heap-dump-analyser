@@ -14,7 +14,7 @@
  * @returns {Array} Array of reference chains
  */
 export function findReferenceChains(heapData, targetObjectId, maxDepth = 5) {
-  const { instances, roots, classes } = heapData;
+  const { roots } = heapData;
   const chains = [];
   
   // Build reverse reference map (who references what)

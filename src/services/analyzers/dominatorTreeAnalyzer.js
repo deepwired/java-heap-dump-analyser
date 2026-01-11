@@ -18,11 +18,10 @@
  * @returns {Array} Array of dominator tree entries
  */
 export function calculateDominatorTree(heapData) {
-  const { classes, instances, roots } = heapData;
+  const { classes, instances } = heapData;
   
   // Build a map of which objects are reachable from roots
   const reachableObjects = new Set();
-  const rootObjects = new Set(roots.map(r => r.objectId));
   
   // Mark all instances as potentially reachable
   // In a full implementation, we'd do proper reachability analysis

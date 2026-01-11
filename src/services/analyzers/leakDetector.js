@@ -67,10 +67,9 @@ const LEAK_PATTERNS = {
  * Detect memory leak suspects
  * @param {Object} heapData - Parsed heap dump data
  * @param {Array} histogram - Histogram data from histogramAnalyzer
- * @param {Array} dominatorTree - Dominator tree from dominatorTreeAnalyzer
  * @returns {Array} Array of leak suspects with details
  */
-export function detectLeakSuspects(heapData, histogram, dominatorTree) {
+export function detectLeakSuspects(heapData, histogram) {
   const suspects = [];
   const totalHeapSize = getTotalHeapSize(heapData);
 
@@ -91,7 +90,7 @@ export function detectLeakSuspects(heapData, histogram, dominatorTree) {
     }
     
     // Check for leak patterns
-    for (const [key, pattern] of Object.entries(LEAK_PATTERNS)) {
+    for (const pattern of Object.values(LEAK_PATTERNS)) {
       if (pattern.pattern.test(entry.className)) {
         patterns.push({
           name: pattern.name,
