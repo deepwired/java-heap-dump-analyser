@@ -10,6 +10,7 @@ import './FileUpload.css';
 
 function FileUpload({ onFileSelect }) {
   const [isDragging, setIsDragging] = useState(false);
+  const [error, setError] = useState(null);
 
   const handleDragOver = (e) => {
     e.preventDefault();
@@ -38,8 +39,9 @@ function FileUpload({ onFileSelect }) {
   };
 
   const handleFile = (file) => {
+    setError(null);
     if (!file.name.endsWith('.hprof')) {
-      alert('Please select a .hprof file');
+      setError('Please select a .hprof file');
       return;
     }
     onFileSelect(file);
@@ -47,6 +49,12 @@ function FileUpload({ onFileSelect }) {
 
   return (
     <div className="file-upload">
+      {error && (
+        <div className="error-banner">
+          ⚠️ {error}
+        </div>
+      )}
+      
       <div 
         className={`upload-area ${isDragging ? 'dragging' : ''}`}
         onDragOver={handleDragOver}

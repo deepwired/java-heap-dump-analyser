@@ -4,6 +4,17 @@
   padding: 40px 20px;
 }
 
+.error-banner {
+  padding: 16px 20px;
+  background: #ffebee;
+  border: 1px solid #ef5350;
+  border-radius: 8px;
+  color: #c62828;
+  font-size: 16px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
 .upload-area {
   border: 3px dashed #ccc;
   border-radius: 12px;

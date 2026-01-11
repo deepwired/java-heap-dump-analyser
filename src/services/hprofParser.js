@@ -219,10 +219,8 @@ export class HprofParser {
   /**
    * Parse HEAP_DUMP or HEAP_DUMP_SEGMENT record
    */
-  parseHeapDump() {
-    // Parse until we reach the end of current record data
-    // The position tracking is handled by the caller (parseRecord)
-    while (this.position < this.data.byteLength) {
+  parseHeapDump(endPosition) {
+    while (this.position < endPosition) {
       const subTag = this.data.getUint8(this.position++);
       
       try {
