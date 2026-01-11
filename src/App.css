@@ -1,0 +1,235 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: #f5f5f5;
+}
+
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 30px 40px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.header-content h1 {
+  margin: 0 0 8px 0;
+  font-size: 32px;
+  font-weight: 700;
+}
+
+.header-content .tagline {
+  margin: 0;
+  font-size: 16px;
+  opacity: 0.9;
+}
+
+.reset-button {
+  padding: 12px 24px;
+  background: rgba(255,255,255,0.2);
+  color: white;
+  border: 2px solid white;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.reset-button:hover {
+  background: rgba(255,255,255,0.3);
+  transform: translateY(-2px);
+}
+
+.app-main {
+  flex: 1;
+  padding: 20px;
+  max-width: 1600px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.error-message {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+  background: #ffebee;
+  border: 1px solid #ef5350;
+  border-radius: 8px;
+  color: #c62828;
+  margin-bottom: 20px;
+  font-size: 16px;
+}
+
+.error-icon {
+  font-size: 32px;
+  flex-shrink: 0;
+}
+
+.analysis-view {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  overflow: hidden;
+}
+
+.analysis-header {
+  padding: 20px 30px;
+  background: #f9f9f9;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.file-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 16px;
+}
+
+.file-info .label {
+  font-weight: 600;
+  color: #666;
+}
+
+.file-info .value {
+  font-family: 'Courier New', monospace;
+  color: #333;
+}
+
+.tabs {
+  display: flex;
+  background: #f0f0f0;
+  border-bottom: 2px solid #e0e0e0;
+  overflow-x: auto;
+}
+
+.tab {
+  padding: 16px 24px;
+  background: transparent;
+  border: none;
+  font-size: 16px;
+  font-weight: 600;
+  color: #666;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-bottom: 3px solid transparent;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tab:hover {
+  background: #e8e8e8;
+  color: #333;
+}
+
+.tab.active {
+  background: white;
+  color: #667eea;
+  border-bottom-color: #667eea;
+}
+
+.tab .badge {
+  display: inline-block;
+  padding: 2px 8px;
+  background: #f44336;
+  color: white;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 700;
+  min-width: 20px;
+  text-align: center;
+}
+
+.tab-content {
+  min-height: 400px;
+}
+
+.app-footer {
+  background: #333;
+  color: white;
+  padding: 24px 40px;
+  margin-top: 40px;
+}
+
+.footer-content {
+  max-width: 1600px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.footer-section {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.footer-icon {
+  font-size: 18px;
+}
+
+.footer-section a {
+  color: #fff;
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.2s;
+}
+
+.footer-section a:hover {
+  border-bottom-color: #fff;
+}
+
+@media (max-width: 768px) {
+  .app-header {
+    padding: 20px;
+  }
+  
+  .header-content h1 {
+    font-size: 24px;
+  }
+  
+  .header-content .tagline {
+    font-size: 14px;
+  }
+  
+  .tabs {
+    overflow-x: scroll;
+  }
+  
+  .tab {
+    padding: 12px 16px;
+    font-size: 14px;
+  }
+  
+  .footer-content {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
