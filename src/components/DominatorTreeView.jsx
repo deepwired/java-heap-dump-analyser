@@ -6,11 +6,13 @@
 
 import { useState, useMemo } from 'react';
 import { formatSize, formatNumber } from '../services/analyzers/histogramAnalyzer.js';
+import ClassDetailsModal from './ClassDetailsModal.jsx';
 import './DominatorTreeView.css';
 
 function DominatorTreeView({ dominatorTree, totalHeapSize }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [limit, setLimit] = useState(100);
+  const [selectedClass, setSelectedClass] = useState(null);
 
   const filtered = useMemo(() => {
     let result = [...dominatorTree];
@@ -24,8 +26,22 @@ function DominatorTreeView({ dominatorTree, totalHeapSize }) {
     return result.slice(0, limit);
   }, [dominatorTree, searchTerm, limit]);
 
+  const handleRowClick = (entry) => {
+    setSelectedClass(entry);
+  };
+
+  const handleCloseModal = () => {
+    setSelectedClass(null);
+  };
+
   return (
     <div className="dominator-tree-view">
+      {selectedClass && (
+        <ClassDetailsModal 
+          classData={selectedClass}
+          onClose={handleCloseModal}
+        />
+      )}
       <div className="dominator-header">
         <h2>Dominator Tree</h2>
         <p className="description">
@@ -69,7 +85,12 @@ function DominatorTreeView({ dominatorTree, totalHeapSize }) {
             {filtered.map((entry, index) => {
               const percentage = (entry.retainedSize / totalHeapSize) * 100;
               return (
-                <tr key={index}>
+                <tr 
+                  key={index}
+                  onClick={() => handleRowClick(entry)}
+                  className="clickable-row"
+                  title="Click for detailed insights"
+                >
                   <td className="class-name" title={entry.className}>
                     {entry.className}
                   </td>

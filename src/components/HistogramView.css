@@ -114,8 +114,16 @@
   transition: background 0.15s;
 }
 
+.histogram-table tbody tr.clickable-row {
+  cursor: pointer;
+}
+
 .histogram-table tbody tr:hover {
   background: #f9f9f9;
+}
+
+.histogram-table tbody tr.clickable-row:hover {
+  background: #e3f2fd;
 }
 
 .histogram-table td {

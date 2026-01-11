@@ -23,43 +23,71 @@ const LEAK_PATTERNS = {
     pattern: /java\.lang\.String|char\[\]/i,
     name: 'Retained Strings',
     description: 'Large number of String objects or char arrays. Common in batch processing and logging.',
-    severity: 'high'
+    severity: 'high',
+    resolutionLink: 'https://www.baeldung.com/java-string-memory'
   },
   COLLECTION: {
-    pattern: /java\.util\.(HashMap|ArrayList|HashSet|LinkedList|TreeMap|TreeSet|Vector|Hashtable)/i,
+    pattern: /java\.util\.(HashMap|ArrayList|HashSet|LinkedList|TreeMap|TreeSet|Vector|Hashtable|ConcurrentHashMap)/i,
     name: 'Uncollected Collections',
     description: 'Collections that may be growing unbounded. Check for missing cleanup logic.',
-    severity: 'high'
+    severity: 'high',
+    resolutionLink: 'https://www.baeldung.com/java-memory-leaks#4-hashmap-memory-leak'
   },
   BYTE_ARRAY: {
     pattern: /byte\[\]/i,
     name: 'Byte Arrays',
     description: 'Large byte arrays, possibly from buffering or caching.',
-    severity: 'medium'
+    severity: 'medium',
+    resolutionLink: 'https://www.baeldung.com/java-io-buffered-streams'
   },
   CLASSLOADER: {
     pattern: /ClassLoader$/i,
     name: 'Classloader Leak',
     description: 'Retained classloaders prevent entire class graphs from being unloaded.',
-    severity: 'critical'
+    severity: 'critical',
+    resolutionLink: 'https://www.baeldung.com/java-memory-leaks#6-classloader-leak'
   },
   THREAD: {
     pattern: /java\.lang\.Thread/i,
     name: 'Thread Leak',
     description: 'Threads that were not properly shut down.',
-    severity: 'high'
+    severity: 'high',
+    resolutionLink: 'https://www.baeldung.com/java-executor-service-tutorial'
+  },
+  THREAD_LOCAL: {
+    pattern: /java\.lang\.ThreadLocal/i,
+    name: 'ThreadLocal Leak',
+    description: 'ThreadLocal values not removed, common in thread pools.',
+    severity: 'high',
+    resolutionLink: 'https://www.baeldung.com/java-memory-leaks#5-thread-local-memory-leak'
   },
   LISTENER: {
     pattern: /Listener$/i,
     name: 'Listener Leak',
     description: 'Event listeners that were registered but never removed.',
-    severity: 'medium'
+    severity: 'medium',
+    resolutionLink: 'https://www.baeldung.com/java-observer-pattern'
   },
   REFERENCE: {
     pattern: /Reference$/i,
     name: 'Reference Objects',
     description: 'Soft/Weak/Phantom references accumulating in queues.',
-    severity: 'low'
+    severity: 'low',
+    resolutionLink: 'https://www.baeldung.com/java-weak-reference'
+  },
+  CACHE: {
+    pattern: /Cache/i,
+    name: 'Cache Growth',
+    description: 'Cache growing without eviction policy or size limits.',
+    severity: 'high',
+    resolutionLink: 'https://github.com/google/guava/wiki/CachesExplained'
+  },
+  CONNECTION: {
+    pattern: /Connection|Statement|ResultSet/i,
+    name: 'Database Resource Leak',
+    description: 'JDBC resources not properly closed.',
+    severity: 'high',
+    resolutionLink: 'https://www.baeldung.com/jdbc-connection-pooling'
   }
 };
 
@@ -185,25 +213,55 @@ export function generateLeakInsights(suspects) {
   // Generate recommendations
   if (insights.critical > 0) {
     insights.recommendations.push(
-      'Critical: Classloader leaks detected. Review application lifecycle and ensure proper cleanup.'
+      '🔴 Critical: Classloader leaks detected. Review application lifecycle and ensure proper cleanup on unload.'
     );
   }
   
   if (insights.topPatterns['Retained Strings']?.count > 0) {
     insights.recommendations.push(
-      'High string retention detected. Review batch processing and ensure strings are not accumulated unnecessarily.'
+      '⚠️ High string retention detected. Review batch processing, logging, and ensure strings are not accumulated unnecessarily. Consider string interning for duplicates.'
     );
   }
   
   if (insights.topPatterns['Uncollected Collections']?.count > 0) {
     insights.recommendations.push(
-      'Growing collections detected. Implement size limits and periodic cleanup for caches and buffers.'
+      '⚠️ Growing collections detected. Implement size limits, eviction policies, and periodic cleanup for caches and buffers.'
+    );
+  }
+  
+  if (insights.topPatterns['ThreadLocal Leak']?.count > 0) {
+    insights.recommendations.push(
+      '⚠️ ThreadLocal usage detected. Always call ThreadLocal.remove() after use, especially in thread pools.'
     );
   }
   
   if (insights.topPatterns['Listener Leak']?.count > 0) {
     insights.recommendations.push(
-      'Event listener accumulation detected. Ensure listeners are properly unregistered.'
+      '⚠️ Event listener accumulation detected. Ensure listeners are properly unregistered when components are destroyed.'
+    );
+  }
+
+  if (insights.topPatterns['Thread Leak']?.count > 0) {
+    insights.recommendations.push(
+      '⚠️ Thread objects detected. Ensure ExecutorService instances are properly shut down and threads are not leaked.'
+    );
+  }
+
+  if (insights.topPatterns['Cache Growth']?.count > 0) {
+    insights.recommendations.push(
+      '💡 Cache implementations found. Verify maximum size limits and eviction policies are configured.'
+    );
+  }
+
+  if (insights.topPatterns['Database Resource Leak']?.count > 0) {
+    insights.recommendations.push(
+      '⚠️ JDBC resources detected. Always close Connections, Statements, and ResultSets using try-with-resources.'
+    );
+  }
+
+  if (insights.high > 5) {
+    insights.recommendations.push(
+      '💡 Multiple high-severity issues found. Prioritize fixing critical and high-severity leaks first for maximum impact.'
     );
   }
 
