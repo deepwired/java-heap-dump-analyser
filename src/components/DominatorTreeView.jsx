@@ -9,10 +9,51 @@ import { formatSize, formatNumber } from '../services/analyzers/histogramAnalyze
 import ClassDetailsModal from './ClassDetailsModal.jsx';
 import './DominatorTreeView.css';
 
-function DominatorTreeView({ dominatorTree, totalHeapSize }) {
+function DominatorTreeView({ dominatorTree, totalHeapSize, allFiles = [] }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [limit, setLimit] = useState(100);
   const [selectedClass, setSelectedClass] = useState(null);
+
+  // Calculate comparison data
+  const hasMultipleFiles = allFiles.length > 1;
+  const comparisonData = useMemo(() => {
+    if (!hasMultipleFiles) return null;
+    
+    const validFiles = allFiles.filter(f => !f.error && f.dominatorTree);
+    if (validFiles.length < 2) return null;
+    
+    const classComparisons = new Map();
+    
+    validFiles.forEach((file) => {
+      file.dominatorTree.forEach(entry => {
+        if (!classComparisons.has(entry.className)) {
+          classComparisons.set(entry.className, {
+            retainedSizes: []
+          });
+        }
+        const comp = classComparisons.get(entry.className);
+        comp.retainedSizes.push(entry.retainedSize);
+      });
+    });
+    
+    return classComparisons;
+  }, [allFiles, hasMultipleFiles]);
+
+  const getComparisonInfo = (className, currentRetainedSize) => {
+    if (!comparisonData) return null;
+    
+    const comparison = comparisonData.get(className);
+    if (!comparison || comparison.retainedSizes.length < 2) return null;
+    
+    const avgRetained = comparison.retainedSizes.reduce((a, b) => a + b, 0) / comparison.retainedSizes.length;
+    const trend = currentRetainedSize > avgRetained * 1.2 ? 'up' : (currentRetainedSize < avgRetained * 0.8 ? 'down' : 'stable');
+    
+    return {
+      trend,
+      avgRetained,
+      filesPresent: comparison.retainedSizes.length
+    };
+  };
 
   const filtered = useMemo(() => {
     let result = [...dominatorTree];
@@ -44,6 +85,11 @@ function DominatorTreeView({ dominatorTree, totalHeapSize }) {
       )}
       <div className="dominator-header">
         <h2>Dominator Tree</h2>
+        {hasMultipleFiles && (
+          <div className="comparison-notice">
+            📊 Comparing with {allFiles.length} files - retention trends shown
+          </div>
+        )}
         <p className="description">
           Shows retained heap size by class. Retained size is the amount of memory
           that would be freed if all instances of a class were garbage collected.
@@ -79,11 +125,14 @@ function DominatorTreeView({ dominatorTree, totalHeapSize }) {
               <th className="number">Retained Size</th>
               <th className="number">% of Heap</th>
               <th className="number">Avg Size</th>
+              {hasMultipleFiles && <th className="comparison-col">Trend</th>}
             </tr>
           </thead>
           <tbody>
             {filtered.map((entry, index) => {
               const percentage = (entry.retainedSize / totalHeapSize) * 100;
+              const comparison = hasMultipleFiles ? getComparisonInfo(entry.className, entry.retainedSize) : null;
+              
               return (
                 <tr 
                   key={index}
@@ -95,7 +144,14 @@ function DominatorTreeView({ dominatorTree, totalHeapSize }) {
                     {entry.className}
                   </td>
                   <td className="number">{formatNumber(entry.instanceCount)}</td>
-                  <td className="number">{formatSize(entry.retainedSize)}</td>
+                  <td className="number">
+                    {formatSize(entry.retainedSize)}
+                    {comparison && comparison.trend !== 'stable' && (
+                      <span className={`trend-icon ${comparison.trend}`}>
+                        {comparison.trend === 'up' ? ' ↑' : ' ↓'}
+                      </span>
+                    )}
+                  </td>
                   <td className="number">
                     <div className="percentage-cell">
                       <div className="percentage-bar">
@@ -108,6 +164,20 @@ function DominatorTreeView({ dominatorTree, totalHeapSize }) {
                     </div>
                   </td>
                   <td className="number">{formatSize(entry.averageSize)}</td>
+                  {hasMultipleFiles && (
+                    <td className="comparison-col">
+                      {comparison ? (
+                        <div className="comparison-info">
+                          <span className="files-badge">{comparison.filesPresent}/{allFiles.filter(f => !f.error).length}</span>
+                          {comparison.trend === 'up' && <span className="trend-badge up">📈 Growing</span>}
+                          {comparison.trend === 'down' && <span className="trend-badge down">📉 Shrinking</span>}
+                          {comparison.trend === 'stable' && <span className="trend-badge stable">➡️ Stable</span>}
+                        </div>
+                      ) : (
+                        <span className="new-badge">🆕 New</span>
+                      )}
+                    </td>
+                  )}
                 </tr>
               );
             })}

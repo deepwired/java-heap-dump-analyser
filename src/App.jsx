@@ -220,18 +220,23 @@ function App() {
                 <ConsolidatedView heapDumps={heapDumps} />
               )}
               {activeTab === 'histogram' && histogram && (
-                <HistogramView histogram={histogram} />
+                <HistogramView 
+                  histogram={histogram}
+                  allFiles={heapDumps}
+                />
               )}
               {activeTab === 'dominator' && dominatorTree && (
                 <DominatorTreeView 
                   dominatorTree={dominatorTree}
                   totalHeapSize={totalHeapSize}
+                  allFiles={heapDumps}
                 />
               )}
               {activeTab === 'leaks' && leakSuspects && (
                 <LeakSuspectsView 
                   suspects={leakSuspects}
                   insights={leakInsights}
+                  allFiles={heapDumps}
                 />
               )}
             </div>

@@ -9,8 +9,12 @@ import { formatSize, formatNumber } from '../services/analyzers/histogramAnalyze
 import ClassDetailsModal from './ClassDetailsModal.jsx';
 import './LeakSuspectsView.css';
 
-function LeakSuspectsView({ suspects, insights }) {
+function LeakSuspectsView({ suspects, insights, allFiles = [] }) {
   const [selectedClass, setSelectedClass] = useState(null);
+
+  // Calculate comparison data
+  const hasMultipleFiles = allFiles.length > 1;
+  const crossFileLeaks = hasMultipleFiles ? getCrossFileLeaks(allFiles) : null;
 
   const getSeverityColor = (severity) => {
     switch (severity) {
@@ -50,6 +54,11 @@ function LeakSuspectsView({ suspects, insights }) {
       )}
       <div className="leak-suspects-header">
         <h2>Memory Leak Suspects</h2>
+        {hasMultipleFiles && crossFileLeaks && (
+          <div className="comparison-notice">
+            📊 Comparing with {allFiles.length} files - persistent leaks highlighted
+          </div>
+        )}
         <p className="description">
           Automatically detected classes that may be causing memory leaks.
         </p>
@@ -142,36 +151,47 @@ function LeakSuspectsView({ suspects, insights }) {
             </p>
           </div>
         ) : (
-          suspects.map((suspect, index) => (
-            <div key={index} className="suspect-card">
-              <div className="suspect-header">
-                <div className="suspect-severity" style={{ color: getSeverityColor(suspect.severity) }}>
-                  <span className="severity-icon">{getSeverityIcon(suspect.severity)}</span>
-                  <span className="severity-text">{suspect.severity.toUpperCase()}</span>
+          suspects.map((suspect, index) => {
+            const crossFileInfo = crossFileLeaks ? crossFileLeaks.get(suspect.className) : null;
+            
+            return (
+              <div key={index} className={`suspect-card ${crossFileInfo?.isPersistent ? 'persistent-leak' : ''}`}>
+                <div className="suspect-header">
+                  <div className="suspect-severity" style={{ color: getSeverityColor(suspect.severity) }}>
+                    <span className="severity-icon">{getSeverityIcon(suspect.severity)}</span>
+                    <span className="severity-text">{suspect.severity.toUpperCase()}</span>
+                  </div>
+                  <div 
+                    className="suspect-class clickable-suspect-class"
+                    onClick={() => handleClassClick(suspect)}
+                    title="Click for detailed insights"
+                  >
+                    {suspect.className}
+                  </div>
+                  {crossFileInfo && (
+                    <div className="cross-file-badge">
+                      {crossFileInfo.isPersistent && <span className="persistent-badge">⚠️ Persistent</span>}
+                      <span className="occurrence-badge">
+                        {crossFileInfo.occurrences}/{crossFileInfo.totalFiles} files
+                      </span>
+                    </div>
+                  )}
                 </div>
-                <div 
-                  className="suspect-class clickable-suspect-class"
-                  onClick={() => handleClassClick(suspect)}
-                  title="Click for detailed insights"
-                >
-                  {suspect.className}
-                </div>
-              </div>
 
-              <div className="suspect-stats">
-                <div className="stat">
-                  <span className="stat-label">Instances:</span>
-                  <span className="stat-value">{formatNumber(suspect.instanceCount)}</span>
+                <div className="suspect-stats">
+                  <div className="stat">
+                    <span className="stat-label">Instances:</span>
+                    <span className="stat-value">{formatNumber(suspect.instanceCount)}</span>
+                  </div>
+                  <div className="stat">
+                    <span className="stat-label">Total Size:</span>
+                    <span className="stat-value">{formatSize(suspect.totalSize)}</span>
+                  </div>
+                  <div className="stat">
+                    <span className="stat-label">Heap %:</span>
+                    <span className="stat-value">{suspect.retentionPercentage.toFixed(2)}%</span>
+                  </div>
                 </div>
-                <div className="stat">
-                  <span className="stat-label">Total Size:</span>
-                  <span className="stat-value">{formatSize(suspect.totalSize)}</span>
-                </div>
-                <div className="stat">
-                  <span className="stat-label">Heap %:</span>
-                  <span className="stat-value">{suspect.retentionPercentage.toFixed(2)}%</span>
-                </div>
-              </div>
 
               {suspect.reasons.length > 0 && (
                 <div className="suspect-reasons">
@@ -197,11 +217,46 @@ function LeakSuspectsView({ suspects, insights }) {
                 </div>
               )}
             </div>
-          ))
+            );
+          })
         )}
       </div>
     </div>
   );
+}
+
+// Helper function to analyze leaks across files
+function getCrossFileLeaks(allFiles) {
+  const validFiles = allFiles.filter(f => !f.error && f.leakSuspects);
+  if (validFiles.length < 2) return null;
+  
+  const leakOccurrences = new Map();
+  
+  validFiles.forEach((file) => {
+    file.leakSuspects.forEach(suspect => {
+      if (!leakOccurrences.has(suspect.className)) {
+        leakOccurrences.set(suspect.className, {
+          count: 0,
+          severities: []
+        });
+      }
+      const data = leakOccurrences.get(suspect.className);
+      data.count++;
+      data.severities.push(suspect.severity);
+    });
+  });
+  
+  // Create a map for quick lookup
+  const result = new Map();
+  leakOccurrences.forEach((data, className) => {
+    result.set(className, {
+      occurrences: data.count,
+      totalFiles: validFiles.length,
+      isPersistent: data.count >= validFiles.length * 0.7
+    });
+  });
+  
+  return result;
 }
 
 export default LeakSuspectsView;
