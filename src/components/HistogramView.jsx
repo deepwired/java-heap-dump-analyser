@@ -53,7 +53,7 @@ function HistogramView({ histogram, allFiles = [] }) {
     const sizes = comparison.sizes.filter(s => s !== undefined);
     const instances = comparison.instances.filter(i => i !== undefined);
     
-    if (sizes.length < 2) return null;
+    if (sizes.length < 2 || instances.length === 0) return null;
     
     const avgSize = sizes.reduce((a, b) => a + b, 0) / sizes.length;
     const avgInstances = instances.reduce((a, b) => a + b, 0) / instances.length;

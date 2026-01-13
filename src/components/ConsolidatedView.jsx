@@ -282,7 +282,7 @@ function aggregateHeapDumps(heapDumps) {
   // Find common leak suspects (appearing in 2+ files)
   const commonLeakSuspects = [];
   leakSuspectCounts.forEach((data, className) => {
-    if (data.count >= 2) {
+    if (data.count >= 2 && data.retainedSizes.length > 0) {
       const avgRetainedSize = data.retainedSizes.reduce((a, b) => a + b, 0) / data.retainedSizes.length;
       const trend = analyzeTrend(data.retainedSizes);
       const severity = getMostCommonSeverity(data.severities);
@@ -303,7 +303,7 @@ function aggregateHeapDumps(heapDumps) {
   // Find consistent memory consumers
   const consistentMemoryConsumers = [];
   classDataMap.forEach((data, className) => {
-    if (data.filesPresent >= Math.max(2, heapDumps.length * 0.5)) {
+    if (data.filesPresent >= Math.max(2, heapDumps.length * 0.5) && data.sizes.length > 0) {
       const avgSize = data.sizes.reduce((a, b) => a + b, 0) / data.sizes.length;
       const minSize = Math.min(...data.sizes);
       const maxSize = Math.max(...data.sizes);

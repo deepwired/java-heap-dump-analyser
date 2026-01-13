@@ -14,14 +14,28 @@ A privacy-focused, client-side web application for analyzing Java heap dumps (.h
 
 ## Features
 
+- **📂 Multi-File Analysis**: Upload and compare multiple heap dumps
+  - **🆕 Upload multiple .hprof files** simultaneously via drag-drop or file selector
+  - **🆕 File selector dropdown** to switch between individual heap dumps
+  - **🆕 Consolidated Analysis tab** showing patterns across all files
+  - **🆕 Trend indicators** showing memory growth/decline across files
+  - **🆕 Persistent leak detection** highlighting issues appearing in most files
 - **📊 Object Histogram**: View class names, instance counts, and total memory usage
   - **🆕 Click any class row** for detailed insights and resolution guidance
+  - **🆕 Comparative indicators** when multiple files loaded (↑↓ trend arrows)
 - **🌳 Dominator Tree**: Analyze retained heap size by class
   - **🆕 Click any class row** for detailed insights and resolution guidance
+  - **🆕 Retention trends** across multiple files
 - **🔗 Reference Chains**: Trace who holds references to large objects
 - **🔍 Leak Suspects**: Automatic detection of classes with unusually high retained size or instance count
   - **🆕 Click class names** for detailed insights
   - **🆕 Direct links** to troubleshooting resources and professional tools
+  - **🆕 Persistent leak highlighting** for issues appearing in 70%+ of files
+- **📈 Consolidated View**: Cross-file analysis and insights
+  - **🆕 Common leak suspects** appearing in multiple files
+  - **🆕 Consistent memory consumers** with variance analysis
+  - **🆕 Instance count trends** (growing/shrinking classes)
+  - **🆕 Actionable insights and recommendations** based on multi-file patterns
 - **💡 Insights**: Identify common leak patterns:
   - Retained batch strings
   - Uncollected collections
@@ -66,13 +80,27 @@ The application will open at `http://localhost:5173`
 
 ### Usage
 
-1. Click "Choose File" or drag and drop a `.hprof` file
+**Single File Analysis:**
+1. Click "Choose File(s)" or drag and drop a `.hprof` file
 2. Wait for the file to be parsed (this happens in your browser)
 3. Explore the analysis results:
    - **Histogram Tab**: See all classes sorted by memory usage
    - **Dominator Tree Tab**: View retained heap by class
    - **Leak Suspects Tab**: Review automatically detected potential memory leaks
-   - **References Tab**: Trace object reference chains
+
+**Multi-File Comparison:**
+1. Click "Choose File(s)" and select multiple `.hprof` files, or drag and drop multiple files
+2. Wait for all files to be parsed
+3. Use the file selector dropdown to switch between individual heap dumps
+4. Explore the **Consolidated Analysis** tab to:
+   - View common leak suspects appearing across files
+   - Identify classes with consistent high memory usage
+   - Analyze instance count trends (growing/shrinking)
+   - Get actionable insights based on multi-file patterns
+5. In individual tabs (Histogram, Dominator Tree, Leak Suspects):
+   - See trend indicators (↑↓) comparing current file to average
+   - View file presence badges showing how many files contain each class
+   - Identify persistent leaks highlighted across multiple files
 
 ### Building for Production
 
