@@ -97,6 +97,11 @@ body {
   padding: 20px 30px;
   background: #f9f9f9;
   border-bottom: 1px solid #e0e0e0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
 }
 
 .file-info {
@@ -114,6 +119,39 @@ body {
 .file-info .value {
   font-family: 'Courier New', monospace;
   color: #333;
+}
+
+.file-selector {
+  font-family: 'Courier New', monospace;
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  background: white;
+  color: #333;
+  cursor: pointer;
+  min-width: 250px;
+  max-width: 400px;
+  transition: border-color 0.2s ease;
+}
+
+.file-selector:hover {
+  border-color: #667eea;
+}
+
+.file-selector:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.file-count-badge {
+  padding: 6px 12px;
+  background: #667eea;
+  color: white;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 600;
 }
 
 .tabs {

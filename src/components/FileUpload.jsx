@@ -25,26 +25,31 @@ function FileUpload({ onFileSelect }) {
     e.preventDefault();
     setIsDragging(false);
     
-    const files = e.dataTransfer.files;
+    const files = Array.from(e.dataTransfer.files);
     if (files.length > 0) {
-      handleFile(files[0]);
+      handleFiles(files);
     }
   };
 
   const handleFileInput = (e) => {
-    const files = e.target.files;
+    const files = Array.from(e.target.files);
     if (files.length > 0) {
-      handleFile(files[0]);
+      handleFiles(files);
     }
   };
 
-  const handleFile = (file) => {
+  const handleFiles = (files) => {
     setError(null);
-    if (!file.name.endsWith('.hprof')) {
-      setError('Please select a .hprof file');
+    
+    // Validate all files are .hprof
+    const invalidFiles = files.filter(file => !file.name.endsWith('.hprof'));
+    if (invalidFiles.length > 0) {
+      setError(`Please select only .hprof files. Invalid: ${invalidFiles.map(f => f.name).join(', ')}`);
       return;
     }
-    onFileSelect(file);
+    
+    // Pass all files to parent
+    onFileSelect(files);
   };
 
   return (
@@ -62,17 +67,19 @@ function FileUpload({ onFileSelect }) {
         onDrop={handleDrop}
       >
         <div className="upload-icon">📁</div>
-        <h2>Upload Heap Dump</h2>
-        <p>Drag and drop your .hprof file here, or click to browse</p>
+        <h2>Upload Heap Dump(s)</h2>
+        <p>Drag and drop your .hprof file(s) here, or click to browse</p>
+        <p className="multi-file-hint">💡 You can select multiple files to compare and analyze trends</p>
         <input 
           type="file" 
           accept=".hprof"
           onChange={handleFileInput}
           id="file-input"
+          multiple
           style={{ display: 'none' }}
         />
         <label htmlFor="file-input" className="upload-button">
-          Choose File
+          Choose File(s)
         </label>
       </div>
       
