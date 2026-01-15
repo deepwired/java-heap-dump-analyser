@@ -354,3 +354,45 @@
   line-height: 1.4;
 }
 
+/* Comparison features */
+.comparison-notice {
+  margin: 10px 0;
+  padding: 8px 16px;
+  background: #e3f2fd;
+  border-radius: 6px;
+  color: #1976d2;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.suspect-card.persistent-leak {
+  border-left: 4px solid #c62828;
+  background: #fff5f5;
+}
+
+.cross-file-badge {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-left: auto;
+}
+
+.persistent-badge {
+  padding: 4px 10px;
+  background: #ffebee;
+  color: #c62828;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.occurrence-badge {
+  padding: 4px 10px;
+  background: #f0f0f0;
+  color: #666;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+

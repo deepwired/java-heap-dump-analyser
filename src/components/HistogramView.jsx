@@ -9,12 +9,66 @@ import { formatSize, formatNumber } from '../services/analyzers/histogramAnalyze
 import ClassDetailsModal from './ClassDetailsModal.jsx';
 import './HistogramView.css';
 
-function HistogramView({ histogram }) {
+function HistogramView({ histogram, allFiles = [] }) {
   const [sortBy, setSortBy] = useState('totalSize');
   const [sortOrder, setSortOrder] = useState('desc');
   const [searchTerm, setSearchTerm] = useState('');
   const [limit, setLimit] = useState(100);
   const [selectedClass, setSelectedClass] = useState(null);
+
+  // Calculate comparison data
+  const hasMultipleFiles = allFiles.length > 1;
+  const comparisonData = useMemo(() => {
+    if (!hasMultipleFiles) return null;
+    
+    const validFiles = allFiles.filter(f => !f.error && f.histogram);
+    if (validFiles.length < 2) return null;
+    
+    const classComparisons = new Map();
+    
+    // Build comparison map
+    validFiles.forEach((file, fileIndex) => {
+      file.histogram.forEach(entry => {
+        if (!classComparisons.has(entry.className)) {
+          classComparisons.set(entry.className, {
+            sizes: [],
+            instances: []
+          });
+        }
+        const comp = classComparisons.get(entry.className);
+        comp.sizes[fileIndex] = entry.totalSize;
+        comp.instances[fileIndex] = entry.instanceCount;
+      });
+    });
+    
+    return classComparisons;
+  }, [allFiles, hasMultipleFiles]);
+
+  const getComparisonInfo = (className, currentSize, currentInstances) => {
+    if (!comparisonData) return null;
+    
+    const comparison = comparisonData.get(className);
+    if (!comparison) return null;
+    
+    const sizes = comparison.sizes.filter(s => s !== undefined);
+    const instances = comparison.instances.filter(i => i !== undefined);
+    
+    if (sizes.length < 2 || instances.length === 0) return null;
+    
+    const avgSize = sizes.reduce((a, b) => a + b, 0) / sizes.length;
+    const avgInstances = instances.reduce((a, b) => a + b, 0) / instances.length;
+    
+    const sizeTrend = currentSize > avgSize * 1.2 ? 'up' : (currentSize < avgSize * 0.8 ? 'down' : 'stable');
+    const instanceTrend = currentInstances > avgInstances * 1.2 ? 'up' : (currentInstances < avgInstances * 0.8 ? 'down' : 'stable');
+    
+    return {
+      sizeTrend,
+      instanceTrend,
+      avgSize,
+      avgInstances,
+      filesPresent: sizes.length
+    };
+  };
 
   const sortedAndFiltered = useMemo(() => {
     let result = [...histogram];
@@ -71,6 +125,11 @@ function HistogramView({ histogram }) {
       )}
       <div className="histogram-header">
         <h2>Object Histogram</h2>
+        {hasMultipleFiles && (
+          <div className="comparison-notice">
+            📊 Comparing with {allFiles.length} files - trends shown relative to average
+          </div>
+        )}
         <div className="histogram-summary">
           <div className="summary-item">
             <span className="label">Total Classes:</span>
@@ -122,26 +181,59 @@ function HistogramView({ histogram }) {
                 Total Size {sortBy === 'totalSize' && (sortOrder === 'asc' ? '↑' : '↓')}
               </th>
               <th className="number">% of Heap</th>
+              {hasMultipleFiles && <th className="comparison-col">Trend</th>}
             </tr>
           </thead>
           <tbody>
-            {sortedAndFiltered.map((entry, index) => (
-              <tr 
-                key={index} 
-                onClick={() => handleRowClick(entry)}
-                className="clickable-row"
-                title="Click for detailed insights"
-              >
-                <td className="class-name" title={entry.className}>
-                  {entry.className}
-                </td>
-                <td className="number">{formatNumber(entry.instanceCount)}</td>
-                <td className="number">{formatSize(entry.totalSize)}</td>
-                <td className="number">
-                  {((entry.totalSize / totalSize) * 100).toFixed(2)}%
-                </td>
-              </tr>
-            ))}
+            {sortedAndFiltered.map((entry, index) => {
+              const comparison = hasMultipleFiles ? getComparisonInfo(entry.className, entry.totalSize, entry.instanceCount) : null;
+              
+              return (
+                <tr 
+                  key={index} 
+                  onClick={() => handleRowClick(entry)}
+                  className="clickable-row"
+                  title="Click for detailed insights"
+                >
+                  <td className="class-name" title={entry.className}>
+                    {entry.className}
+                  </td>
+                  <td className="number">
+                    {formatNumber(entry.instanceCount)}
+                    {comparison && comparison.instanceTrend !== 'stable' && (
+                      <span className={`trend-icon ${comparison.instanceTrend}`}>
+                        {comparison.instanceTrend === 'up' ? ' ↑' : ' ↓'}
+                      </span>
+                    )}
+                  </td>
+                  <td className="number">
+                    {formatSize(entry.totalSize)}
+                    {comparison && comparison.sizeTrend !== 'stable' && (
+                      <span className={`trend-icon ${comparison.sizeTrend}`}>
+                        {comparison.sizeTrend === 'up' ? ' ↑' : ' ↓'}
+                      </span>
+                    )}
+                  </td>
+                  <td className="number">
+                    {((entry.totalSize / totalSize) * 100).toFixed(2)}%
+                  </td>
+                  {hasMultipleFiles && (
+                    <td className="comparison-col">
+                      {comparison ? (
+                        <div className="comparison-info">
+                          <span className="files-badge">{comparison.filesPresent}/{allFiles.filter(f => !f.error).length}</span>
+                          {comparison.sizeTrend === 'up' && <span className="trend-badge up">📈 Above Avg</span>}
+                          {comparison.sizeTrend === 'down' && <span className="trend-badge down">📉 Below Avg</span>}
+                          {comparison.sizeTrend === 'stable' && <span className="trend-badge stable">➡️ Normal</span>}
+                        </div>
+                      ) : (
+                        <span className="new-badge">🆕 New</span>
+                      )}
+                    </td>
+                  )}
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
